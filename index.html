@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จดหมายรัก น้องฟิกซ์ & หมูโอปอ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Mali:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Kanit', sans-serif;
+    background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+    color: #6d4c5c;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  /* หัวใจลอย */
+  .hearts-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .heart {
+    position: absolute;
+    color: #ff9eb5;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    20% { opacity: 0.8; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
+
+  .container {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .title {
+    font-family: 'Mali', cursive;
+    font-size: 2.5rem;
+    color: #d4476b;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0px #fff;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    background: #fff;
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(212, 71, 107, 0.15);
+    margin-bottom: 40px;
+    font-weight: 600;
+    color: #8a6a78;
+  }
+
+  /* ===== หน้าล็อคจดหมาย ===== */
+  .lock-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(212, 71, 107, 0.15);
+    border: 2px solid #ffe4e1;
+    transition: all 0.5s ease;
+  }
+  
+  .lock-icon {
+    font-size: 3rem;
+    color: #d4476b;
+    margin-bottom: 20px;
+    animation: beat 1.5s infinite;
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .lock-title {
+    font-family: 'Mali', cursive;
+    font-size: 1.5rem;
+    color: #d4476b;
+    margin-bottom: 10px;
+  }
+
+  .lock-hint {
+    font-size: 1rem;
+    color: #8a6a78;
+    margin-bottom: 25px;
+  }
+
+  .code-input-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+
+  .code-box {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 2px solid #ffc0cb;
+    border-radius: 12px;
+    outline: none;
+    color: #d4476b;
+    font-family: 'Kanit', sans-serif;
+    transition: all 0.3s;
+    background: #fff;
+  }
+  .code-box:focus {
+    border-color: #d4476b;
+    box-shadow: 0 0 10px rgba(212, 71, 107, 0.2);
+  }
+
+  .btn-open {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 30px;
+    font-family: 'Kanit', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 154, 158, 0.4);
+    transition: transform 0.3s;
+  }
+  .btn-open:hover {
+    transform: translateY(-3px) scale(1.02);
+  }
+  .btn-open:active {
+    transform: scale(0.98);
+  }
+
+  .shake {
+    animation: shake 0.4s;
+    border-color: #ff4d4d !important;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  /* ===== หน้าจดหมายเปิดแล้ว ===== */
+  .letter-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .letter-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(212, 71, 107, 0.15);
+    border: 2px dashed #ffc0cb;
+    text-align: left;
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: #6d4c5c;
+    position: relative;
+    margin-bottom: 40px;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .letter-section.show .letter-card {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .letter-header {
+    font-family: 'Mali', cursive;
+    font-size: 1.8rem;
+    color: #d4476b;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ffe4e1;
+    padding-bottom: 10px;
+  }
+
+  .letter-signature {
+    text-align: right;
+    margin-top: 30px;
+    font-weight: 600;
+    color: #d4476b;
+  }
+
+  /* Gallery */
+  .gallery-title {
+    font-family: 'Mali', cursive;
+    font-size: 1.5rem;
+    color: #d4476b;
+    margin-bottom: 20px;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .photo-frame {
+    background: #fff;
+    padding: 10px 10px 30px 10px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: rotate(-2deg);
+    transition: transform 0.3s;
+  }
+  .photo-frame:nth-child(even) {
+    transform: rotate(2deg);
+  }
+  .photo-frame:hover {
+    transform: rotate(0deg) scale(1.02);
+    z-index: 2;
+  }
+
+  .photo-frame img {
+    width: 100%;
+    border-radius: 5px;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+  }
+  
+  .photo-caption {
+    margin-top: 10px;
+    text-align: center;
+    color: #8a6a78;
+    font-size: 0.9rem;
+  }
+
+  @media (min-width: 600px) {
+    .gallery {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .photo-frame:nth-child(3) {
+      grid-column: span 2;
+      transform: rotate(1deg);
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="hearts"></div>
+
+<div class="container">
+  <div class="title">น้องฟิกซ์ 💕 หมูโอปอ</div>
+  <div class="subtitle">ครบรอบ 1 ปี 9 เดือน</div>
+
+  <!-- ส่วนที่ 1: กรอกรหัส -->
+  <div id="lockSection" class="lock-card">
+    <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+    <div class="lock-title">เปิดจดหมายรัก</div>
+    <div class="lock-hint">คำใบ้: วันเกิดน้องฟิกซ์ (รูปแบบ ตัวเลข 6 หลัก)</div>
+    <div class="code-input-group" id="codeInputGroup">
+      <input type="text" class="code-box" maxlength="1" oninput="moveToNext(this, event)">
+      <input type="text" class="code-box" maxlength="1" oninput="moveToNext(this, event)">
+      <input type="text" class="code-box" maxlength="1" oninput="moveToNext(this, event)">
+      <input type="text" class="code-box" maxlength="1" oninput="moveToNext(this, event)">
+      <input type="text" class="code-box" maxlength="1" oninput="moveToNext(this, event)">
+      <input type="text" class="code-box" maxlength="1" oninput="moveToNext(this, event)">
+    </div>
+    <button class="btn-open" onclick="checkCode()">เปิดจดหมาย</button>
+  </div>
+
+  <!-- ส่วนที่ 2: เนื้อหาจดหมายและรูปภาพ -->
+  <div id="letterSection" class="letter-section">
+    <div class="letter-card">
+      <div class="letter-header">ถึงหมูปีศาจโอปอ</div>
+      <p>วันนี้ครบรอบ 1 ปี 9 เดือน ของเรา ขอบคุณที่ยังอยู่ข้างๆเค้าเสมอทั้งวันที่ดีและแย่ของเรา ขอบคุณที่มาเติมเต็มในชีวิตของเราให้มีความสุขมากขึ้นทุกวัน</p>
+      <div class="letter-signature">
+        รักอ้วนมากนะ ยิ้มเย้อๆ<br>
+        - น้องฟิกซ์
+      </div>
+    </div>
+
+    <div class="gallery-title">ความทรงจำของเรา 📸</div>
+    <div class="gallery">
+      <!-- รูปที่ 1 -->
+      <div class="photo-frame">
+        <img src="https://z-cdn-media.chatglm.cn/files/0bb66992-093a-431c-88d5-c559037bf277.jpg?auth_key=1888437030-4b358fe7ec7342bf9028e2a3fca540fd-0-bdcd1797f4087ee37ba587982c6c57c6" alt="ความทรงจำ 1">
+        <div class="photo-caption">ช่วงเวลาของเรา</div>
+      </div>
+      <!-- รูปที่ 2 -->
+      <div class="photo-frame">
+        <img src="https://z-cdn-media.chatglm.cn/files/004e4963-e776-4c8e-aed5-1ca3b62d501d.jpg?auth_key=1888437030-fb2b1a3473384ef4962f2ca8b44b94f4-0-d3734c553132c870c05fca1e65876484" alt="ความทรงจำ 2">
+        <div class="photo-caption">ยิ้มให้กัน</div>
+      </div>
+      <!-- รูปที่ 3 -->
+      <div class="photo-frame">
+        <img src="https://z-cdn-media.chatglm.cn/files/a3b471f7-6ad3-4d14-8c3e-8c979423430d.jpg?auth_key=1888437030-14addb3cc74b41678c37ed3940e61d7e-0-e5cb22e102dc23e445f58f03bbbabc38" alt="ความทรงจำ 3">
+        <div class="photo-caption">วันแฮปปี้ของเรา</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // สร้างหัวใจลอยพื้นหลัง
+  const heartsContainer = document.getElementById('hearts');
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.innerHTML = '❤';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+    heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }
+  setInterval(createHeart, 300);
+
+  // ฟังก์ชันขยับไปช่องถัดไป
+  function moveToNext(current, e) {
+    current.value = current.value.replace(/[^0-9]/g, '');
+    
+    if (current.value.length === 1) {
+      const next = current.nextElementSibling;
+      if (next && next.classList.contains('code-box')) {
+        next.focus();
+      }
+    }
+
+    if (e.inputType === 'deleteContentBackward' && current.value.length === 0) {
+      const prev = current.previousElementSibling;
+      if (prev && prev.classList.contains('code-box')) {
+        prev.focus();
+      }
+    }
+  }
+
+  // ฟังก์ชันตรวจสอบรหัส
+  function checkCode() {
+    const boxes = document.querySelectorAll('.code-box');
+    let code = '';
+    boxes.forEach(b => code += b.value);
+
+    const lockSection = document.getElementById('lockSection');
+    const letterSection = document.getElementById('letterSection');
+
+    if (code === '230653') {
+      // รหัสถูกต้อง
+      lockSection.style.opacity = '0';
+      lockSection.style.transform = 'scale(0.8)';
+      setTimeout(() => {
+        lockSection.style.display = 'none';
+        letterSection.style.display = 'flex';
+        // หน่วงเวลาเล็กน้อยเพื่อให้ animation ทำงาน
+        setTimeout(() => {
+          letterSection.classList.add('show');
+        }, 50);
+      }, 500);
+    } else {
+      // รหัสผิด - สั่นๆ
+      boxes.forEach(b => {
+        b.classList.add('shake');
+        setTimeout(() => b.classList.remove('shake'), 400);
+      });
+    }
+  }
+
+  // กด Enter เพื่อยืนยันรหัส
+  document.querySelectorAll('.code-box').forEach((input, index, arr) => {
+    input.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        checkCode();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
